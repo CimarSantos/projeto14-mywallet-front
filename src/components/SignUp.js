@@ -1,7 +1,7 @@
 import styled from "styled-components";
 import { Link, useNavigate } from "react-router-dom";
-import { useState } from "react";
-/* import UserContext from "../contexts/UserContext"; */
+import { useState, useContext } from "react";
+import UserContext from "../contexts/UserContext";
 import axios from "axios";
 
 import Logo from "../assets/MyWallet.png";
@@ -12,8 +12,8 @@ function SignUp() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [repeat_password, setRepeat_password] = useState("");
-  /* const { setToken } = useContext(UserContext);
-  const { setUser } = useContext(UserContext); */
+  const { setToken } = useContext(UserContext);
+  const { setUser } = useContext(UserContext);
 
   function Cadastrar(e) {
     e.preventDefault();
@@ -29,8 +29,8 @@ function SignUp() {
     axios
       .post(``, body)
       .then((res) => {
-        /* setToken(res.data.token);
-        setUser(res.data); */
+        setToken(res.data.token);
+        setUser(res.data);
         navigate("/");
       })
       .catch((err) => {
@@ -68,7 +68,7 @@ function SignUp() {
           data-test="password"
           type="password"
           placeholder="Confirme a senha"
-          value={password}
+          value={repeat_password}
           onChange={(e) => setRepeat_password(e.target.value)}
         ></input>
         <button data-test="sign-in-submit" type="submit">
@@ -124,7 +124,7 @@ const Form = styled.form`
 
 const LogoContainer = styled.div`
   justify-content: center;
-  padding: 20% 0 20px 0;
+  padding: 10% 0 20px 0;
   img {
     width: 147px;
   }

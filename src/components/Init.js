@@ -1,86 +1,101 @@
-import styled from "styled-components";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
-/* import UserContext from "../contexts/UserContext"; */
+import { useContext } from "react";
+
+import styled from "styled-components";
 import axios from "axios";
+import UserContext from "../contexts/UserContext.js";
 
 import Logo from "../assets/MyWallet.png";
 
-function Init() {
-  /* const navigate = useNavigate(); */
+export default function Init() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  /* const { setToken } = useContext(UserContext);
-  const { setUser } = useContext(UserContext); */
+  const { setToken } = useContext(UserContext);
 
-  function fazerLogin(e) {
+  const navigate = useNavigate();
+
+  const Login = (e) => {
     e.preventDefault();
-    const body = {
-      email: email,
-      password: password,
-    };
-    axios
-      .post(``, body)
-      .then((res) => {
-        /* setToken(res.data.token);
-        setUser(res.data);
-        navigate("/hoje"); */
+    const request = axios.post("http://localhost:5000/signin", {
+      email,
+      password,
+    });
+    request
+      .then((response) => {
+        setToken(response.data);
+        navigate("/wallet");
       })
       .catch((err) => {
-        alert(`${err.response.data.message} Tente novamente!`);
+        setEmail("");
+        setPassword("");
+        alert(`Ocorreu um erro, verifique os dados e tente novamente`);
       });
-  }
+
+    console.log(request);
+  };
+
   return (
-    <div className="scrnBackground">
+    <ContainerScrn className="scrnBackground">
       <LogoContainer className="flex">
         <img src={Logo} alt="MyWallet" />
       </LogoContainer>
-      <Form className="flex" onSubmit={fazerLogin}>
-        <input
-          data-test="email"
-          type="email"
-          placeholder="E-mail"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-        ></input>
-        <input
-          data-test="password"
-          type="password"
-          placeholder="Senha"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-        ></input>
-        <button data-test="sign-in-submit" type="submit">
-          Entrar
-        </button>
-      </Form>
-      <Link to="/cadastro">
-        <LoginCadastro className="flex">
-          <p data-test="signup-link">Não tem uma conta? Cadastre-se!</p>
-        </LoginCadastro>
-      </Link>
-    </div>
+      <ContainerForm className="flex">
+        <form className="flex" onSubmit={Login}>
+          <input
+            type="text"
+            className="form-control"
+            placeholder="E-mail"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+          />
+          <input
+            type="password"
+            className="form-control"
+            placeholder="Senha"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+          />
+          <button type="submit">Entrar</button>
+        </form>
+      </ContainerForm>
+      <SiginInLink className="flex">
+        <Link to={`/signup`}>
+          <p>Primeira vez? Cadastre-se!</p>
+        </Link>
+      </SiginInLink>
+    </ContainerScrn>
   );
 }
 
-export default Init;
-
-const LoginCadastro = styled.div`
-  justify-content: center;
-  margin: 30px 0;
+const SiginInLink = styled.div`
+  padding-top: 30px;
   p {
-    cursor: pointer;
-    color: #fff;
     font-size: 15px;
+    color: #fff;
     font-weight: 700;
-    text-decoration: none;
   }
 `;
 
-const Form = styled.form`
-  margin-top: 20px;
+const ContainerForm = styled.div`
   flex-direction: column;
-  gap: 10px;
+  padding: 30px 0;
+
+  form {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  input,
+  button {
+    width: 326px;
+    height: 58px;
+    border-radius: 5px;
+    padding: 0 15px;
+  }
+
   input {
     width: 326px;
     height: 58px;
@@ -89,21 +104,29 @@ const Form = styled.form`
     padding: 15px;
     font-size: 20px;
   }
+
   button {
-    width: 326px;
-    height: 58px;
-    border: none;
     background-color: #a328d6;
-    border-radius: 5px;
+    border: none;
     font-size: 20px;
     font-weight: 700;
     color: #fff;
+    cursor: pointer;
+
+    &:hover {
+      color: #a328d6;
+      background-color: #fff;
+    }
   }
+`;
+
+const ContainerScrn = styled.div`
+  height: 100vh;
 `;
 
 const LogoContainer = styled.div`
   justify-content: center;
-  padding: 20% 0 20px 0;
+  padding: 10% 0 20px 0;
   img {
     width: 147px;
   }
